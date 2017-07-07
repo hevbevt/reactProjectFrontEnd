@@ -1,5 +1,6 @@
-var path = require('path');
-var HtmlWebpackPlugin = require('Html-webpack-plugin');
+const path = require('path');
+const webpack = require('webpack');
+const HtmlWebpackPlugin = require('Html-webpack-plugin');
 
 module.exports = {
     entry: {
@@ -15,7 +16,9 @@ module.exports = {
         new HtmlWebpackPlugin({
             template: 'src/index.html',
             title: 'Output Management',
-        })
+        }),
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NamedModulesPlugin(),
     ],
     module: {
         rules: [{
@@ -40,5 +43,16 @@ module.exports = {
             exclude: /node_modules/, 
             loader: "babel-loader"
         }]
+    },
+    devServer: {
+        hot: true, // Tell the dev-server we're using HMR
+        contentBase: path.resolve(__dirname, 'dist'),
+        publicPath: '/',
+        proxy: {
+            '/api/*': {
+                target: 'http://localhost:3000',
+                secure: false,
+            }
+        }
     }
 };
